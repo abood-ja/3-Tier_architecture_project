@@ -54,5 +54,54 @@ namespace ContactsDataAccessLayer
             }
             return isFound;
         }
+        public static int AddNewContact( string FirstName,  string LastName,
+             string Email,  string Phone,  string Address,
+            DateTime DateOfBirth, int CountryID, string ImagePath)
+        {
+            int ContactID = -1;
+            SqlConnection connection =new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string query= @"INSERT INTO Contacts (FirstName, LastName, Email, Phone, Address,DateOfBirth, CountryID,ImagePath)
+                             VALUES (@FirstName, @LastName, @Email, @Phone, @Address,@DateOfBirth, @CountryID,@ImagePath);
+                             SELECT SCOPE_IDENTITY();";
+
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FirstName", FirstName);
+            command.Parameters.AddWithValue("@LastName", LastName);
+            command.Parameters.AddWithValue("@Email", Email);
+            command.Parameters.AddWithValue("@Phone", Phone);
+            command.Parameters.AddWithValue("@Address", Address);
+            command.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
+            command.Parameters.AddWithValue("@CountryID", CountryID);
+
+            if(ImagePath != null)
+            {
+            command.Parameters.AddWithValue("@ImagePath", ImagePath);
+            }
+            else
+            {
+            command.Parameters.AddWithValue("@ImagePath",System.DBNull.Value);
+            }
+            try
+            {
+                connection.Open();
+                object result = command.ExecuteScalar();
+                if (result != null && int.TryParse(result.ToString(), out int insertedID)) {
+                    ContactID = insertedID;
+                }
+            }
+            catch (Exception ex) {
+
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return ContactID;
+
+
+
+
+        }
     }
 }

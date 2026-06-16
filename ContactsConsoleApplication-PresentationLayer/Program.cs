@@ -23,7 +23,19 @@ namespace ContactsConsoleApplication_PresentationLayer
         }
         static void testAddNewContact()
         {
-
+            clsContact Contact1 = new clsContact();
+            Contact1.FirstName = "abood";
+            Contact1.LastName = "jarrar";
+            Contact1.Email = "abood@gmail.com";
+            Contact1.Phone = "059928";
+            Contact1.Address = "nablus";
+            Contact1.DateOfBirth = new DateTime(2000, 2, 1, 10, 20, 0);
+            Contact1.CountryID = 1;
+            Contact1.ImagePath = "";
+            if (Contact1.Save())
+            {
+                Console.WriteLine($"contact with the ID [{Contact1.ID}]  was added succesfully!");
+            }
         }
         static void testUpdateContact()
         {
@@ -35,7 +47,7 @@ namespace ContactsConsoleApplication_PresentationLayer
         }
         static void Main(string[] args)
         {
-            testFindContact(4);
+            testAddNewContact();
         }
     }
 }
