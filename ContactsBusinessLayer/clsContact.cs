@@ -84,6 +84,11 @@ namespace ContactsBusinessLayer
             return clsContactDataAccess.UpdateContact(this.ID, this.FirstName, this.LastName, this.Email, this.Phone, this.Address,
                 this.DateOfBirth, this.CountryID, this.ImagePath);
         }
+
+        public static bool DeleteContact(int ID)
+        {
+            return clsContactDataAccess.DeleteContact(ID);
+        }
         public bool Save()
         {
             switch (Mode)

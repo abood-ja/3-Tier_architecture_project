@@ -151,5 +151,29 @@ namespace ContactsDataAccessLayer
                 }
             return rowsAffected > 0;
         }
+
+        public static bool DeleteContact(int ContactID)
+        {
+            int rowsAffected = 0;
+            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string query= @"Delete Contacts 
+                                where ContactID = @ContactID";
+            SqlCommand command=new SqlCommand(query,connection);
+            command.Parameters.AddWithValue("@ContactID", ContactID);
+            try
+            {
+                connection.Open();
+                rowsAffected = command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                connection.Close();
+            }
+            return rowsAffected > 0;
+        }
     }
 }

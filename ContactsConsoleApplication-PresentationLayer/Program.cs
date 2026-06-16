@@ -56,13 +56,25 @@ namespace ContactsConsoleApplication_PresentationLayer
                 }
             }
         }
+        
+        static void testDeleteContact(int ID)
+        {
+            if (clsContact.DeleteContact(ID))
+            {
+                Console.WriteLine($"the contact with the id[{ID}] was deleted");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to delete the contact");
+            }
+        }
         static void testListContacts()
         {
 
         }
         static void Main(string[] args)
         {
-            testUpdateContact(1);
+            testDeleteContact(1);
         }
     }
 }
