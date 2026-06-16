@@ -80,7 +80,9 @@ namespace ContactsBusinessLayer
 
         private bool _UpdateContact()
         {
-            return true;
+
+            return clsContactDataAccess.UpdateContact(this.ID, this.FirstName, this.LastName, this.Email, this.Phone, this.Address,
+                this.DateOfBirth, this.CountryID, this.ImagePath);
         }
         public bool Save()
         {
