@@ -1,4 +1,5 @@
 ﻿using ContactsBusinessLayer;
+using System.Data;
 
 namespace ContactsConsoleApplication_PresentationLayer
 {
@@ -70,11 +71,16 @@ namespace ContactsConsoleApplication_PresentationLayer
         }
         static void testListContacts()
         {
-
+            DataTable dataTable = clsContact.GetAllContacts();
+            Console.WriteLine("Contacts Data: ");
+            foreach (DataRow row in dataTable.Rows)
+            {
+                Console.WriteLine($"{row["ContactID"]},     {row["FirstName"]} {row["LastName"]}");
+            }
         }
         static void Main(string[] args)
         {
-            testDeleteContact(1);
+            testListContacts();
         }
     }
 }
