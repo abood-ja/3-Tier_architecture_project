@@ -57,7 +57,7 @@ namespace ContactsConsoleApplication_PresentationLayer
                 }
             }
         }
-        
+       
         static void testDeleteContact(int ID)
         {
             if (clsContact.DeleteContact(ID))
@@ -78,9 +78,21 @@ namespace ContactsConsoleApplication_PresentationLayer
                 Console.WriteLine($"{row["ContactID"]},     {row["FirstName"]} {row["LastName"]}");
             }
         }
+
+        static void testIsContactExist(int ID)
+        {
+            if (clsContact.IsContactExist(ID))
+            {
+                Console.WriteLine("Yes contact is there");
+            }
+            else
+            {
+                Console.WriteLine("No contact is not there");
+            }
+        }
         static void Main(string[] args)
         {
-            testListContacts();
+            testIsContactExist(4);
         }
     }
 }

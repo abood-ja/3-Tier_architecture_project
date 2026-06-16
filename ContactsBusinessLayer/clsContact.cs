@@ -117,5 +117,9 @@ namespace ContactsBusinessLayer
         {
             return clsContactDataAccess.GetAllContacts();
         }
+        public static bool IsContactExist(int ID)
+        {
+            return clsContactDataAccess.IsContactExist(ID);
+        }
     }
 }
