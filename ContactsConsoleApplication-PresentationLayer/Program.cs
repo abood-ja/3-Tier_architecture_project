@@ -1,7 +1,7 @@
 ﻿using ContactsBusinessLayer;
 using System.Data;
 
-namespace ContactsConsoleApplication_PresentationLayer
+namespace ContactsPresentationLayer
 {
     public class Program
     {

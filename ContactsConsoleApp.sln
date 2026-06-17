@@ -7,11 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsDataAccessLayer", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsBusinessLayer", "ContactsBusinessLayer\ContactsBusinessLayer.csproj", "{08FFB6E3-0B3C-4A25-BF1C-238EDE72AED3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsConsoleApplication-PresentationLayer", "ContactsConsoleApplication-PresentationLayer\ContactsConsoleApplication-PresentationLayer.csproj", "{BE7AADFA-7BBA-467A-86CF-117A72BA73AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactsPresentationLayer", "ContactsConsoleApplication-PresentationLayer\ContactsPresentationLayer.csproj", "{BE7AADFA-7BBA-467A-86CF-117A72BA73AE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CountryDataAccessLayer", "CountryDataAccess\CountryDataAccessLayer.csproj", "{DDACD6F5-5943-4D8E-8373-E3AA2C4BAE01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CountriesBusinessLayer", "CountryBusinessLayer\CountriesBusinessLayer.csproj", "{BD15AED4-CE8D-4D8A-8AD0-9BB41812D8DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CountriesPresentationLayer", "countriesPresentationLayer\CountriesPresentationLayer.csproj", "{A07DD446-BE42-4774-91A3-E4B3F0EE8CE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BD15AED4-CE8D-4D8A-8AD0-9BB41812D8DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD15AED4-CE8D-4D8A-8AD0-9BB41812D8DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD15AED4-CE8D-4D8A-8AD0-9BB41812D8DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A07DD446-BE42-4774-91A3-E4B3F0EE8CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A07DD446-BE42-4774-91A3-E4B3F0EE8CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A07DD446-BE42-4774-91A3-E4B3F0EE8CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A07DD446-BE42-4774-91A3-E4B3F0EE8CE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

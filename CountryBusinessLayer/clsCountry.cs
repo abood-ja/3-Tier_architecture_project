@@ -30,7 +30,7 @@ namespace CountriesBusinessLayer
         public static clsCountry FindCountryByID(int CountryID)
         {
             string CountryName = "";
-            if (clsContactDataAccess.GetCountryInfoByID(CountryID,ref CountryName))
+            if (clsCountryDataAccess.GetCountryInfoByID(CountryID,ref CountryName))
             {
                 return new clsCountry(CountryID, CountryName);
             }
@@ -43,7 +43,7 @@ namespace CountriesBusinessLayer
         public static clsCountry FindCountryByName(string CountryName)
         {
             int CountryID = -1;
-            if (clsContactDataAccess.GetCountryInfoByName(ref CountryID,  CountryName))
+            if (clsCountryDataAccess.GetCountryInfoByName(ref CountryID,  CountryName))
             {
                 return new clsCountry(CountryID, CountryName);
             }
@@ -54,14 +54,14 @@ namespace CountriesBusinessLayer
         }
         private bool _AddNewCountry()
         {
-            this.CountryID = clsContactDataAccess.AddNewCountry(this.CountryName);
+            this.CountryID = clsCountryDataAccess.AddNewCountry(this.CountryName);
             return this.CountryID != -1;
         }
 
         private bool _UpdateCountry()
         {
 
-            return clsContactDataAccess.UpdateCountry(this.CountryID,this.CountryName);
+            return clsCountryDataAccess.UpdateCountry(this.CountryID,this.CountryName);
         }
 
 
@@ -90,22 +90,22 @@ namespace CountriesBusinessLayer
 
         public static bool DeleteCountry(int CountryID)
         {
-            return clsContactDataAccess.DeleteCountry(CountryID);
+            return clsCountryDataAccess.DeleteCountry(CountryID);
         }
 
         public static DataTable GetAllCountries()
         {
-            return clsContactDataAccess.GetAllCountries();
+            return clsCountryDataAccess.GetAllCountries();
         }
 
         public static bool IsCountryExistByID(int CountryID)
         {
-            return clsContactDataAccess.IsCountryExistByID(CountryID);
+            return clsCountryDataAccess.IsCountryExistByID(CountryID);
         }
 
         public static bool IsCountryExistByName(string CountryName)
         {
-            return clsContactDataAccess.IsCountryExistByName(CountryName);
+            return clsCountryDataAccess.IsCountryExistByName(CountryName);
         }
     }
 }
