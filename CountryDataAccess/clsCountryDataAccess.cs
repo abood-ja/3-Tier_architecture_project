@@ -7,7 +7,8 @@ namespace CountryDataAccessLayer
     public class clsCountryDataAccess
     {
 
-        public static bool GetCountryInfoByID(int CountryID, ref string CountryName)
+        public static bool GetCountryInfoByID(int CountryID, ref string CountryName, ref string Code,
+            ref string PhoneCode)
         {
             bool isFound = false;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -21,6 +22,9 @@ namespace CountryDataAccessLayer
                 if (reader.Read())
                 {
                     CountryName = (string)reader["CountryName"];
+                    Code = reader["Code"] == DBNull.Value ? "" : (string)reader["Code"];
+                    PhoneCode = reader["PhoneCode"]==DBNull.Value?"": (string)reader["PhoneCode"];
+
                     isFound = true;
                 }
                 reader.Close();
@@ -37,19 +41,38 @@ namespace CountryDataAccessLayer
 
         }
 
-        public static int AddNewCountry(string CountryName)
+        public static int AddNewCountry(string CountryName,string Code,string PhoneCode)
         {
             int CountryID = -1;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = @"
-                INSERT INTO Countries
-                  (CountryName)
-                VALUES
-                (@CountryName);
+    INSERT INTO Countries
+        (CountryName, Code, PhoneCode)
+    VALUES
+        (@CountryName, @Code, @PhoneCode);
 
-                SELECT SCOPE_IDENTITY();";
+    SELECT SCOPE_IDENTITY();";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@CountryName", CountryName);
+
+            if (Code != null)
+            {
+                command.Parameters.AddWithValue("@Code", Code);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@Code", System.DBNull.Value);
+            }
+
+            if (PhoneCode != null)
+            {
+                command.Parameters.AddWithValue("@PhoneCode", PhoneCode);
+            }
+            else
+            {
+                command.Parameters.AddWithValue("@PhoneCode", System.DBNull.Value);
+            }
+
             try
             {
                 connection.Open();
@@ -61,7 +84,7 @@ namespace CountryDataAccessLayer
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine("Error: " + ex.Message);
             }
             finally
             {
@@ -70,16 +93,22 @@ namespace CountryDataAccessLayer
             return CountryID;
         }
 
-        public static bool UpdateCountry(int CountryID, string CountryName)
+        public static bool UpdateCountry(int CountryID, string CountryName, string Code, string PhoneCode)
         {
             int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"UPDATE Countries
-                            SET CountryName = @CountryName
-                            WHERE CountryID=@CountryID";
+            string query = @"
+    UPDATE Countries
+    SET
+        CountryName = @CountryName,
+        Code = @Code,
+        PhoneCode = @PhoneCode
+    WHERE CountryID = @CountryID";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@CountryID", CountryID);
             command.Parameters.AddWithValue("@CountryName", CountryName);
+            command.Parameters.AddWithValue("@Code", Code);
+            command.Parameters.AddWithValue("@PhoneCode", PhoneCode);
             try
             {
                 connection.Open();
@@ -199,7 +228,7 @@ namespace CountryDataAccessLayer
             return isFound;
         }
 
-        public static bool GetCountryInfoByName(ref int CountryID, string CountryName)
+        public static bool GetCountryInfoByName(ref int CountryID, string CountryName,ref string Code, ref string PhoneCode)
         {
             bool isFound = false;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -213,6 +242,9 @@ namespace CountryDataAccessLayer
                 if (reader.Read())
                 {
                     CountryID = (int)reader["CountryID"];
+                    Code = reader["Code"] == DBNull.Value ? "" : (string)reader["Code"];
+                    PhoneCode = reader["PhoneCode"] == DBNull.Value ? "" : (string)reader["PhoneCode"];
+
                     isFound = true;
                 }
                 reader.Close();

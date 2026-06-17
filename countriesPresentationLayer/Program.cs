@@ -10,7 +10,7 @@ namespace CountriesPresentationLayer
             clsCountry Country1 = clsCountry.FindCountryByID(ID);
             if (Country1 != null)
             {
-                Console.WriteLine($"{Country1.CountryID},  {Country1.CountryName}");
+                Console.WriteLine($"{Country1.CountryID},  {Country1.CountryName} , {Country1.PhoneCode}");
             }
             else
             {
@@ -23,7 +23,8 @@ namespace CountriesPresentationLayer
             clsCountry Country1 = clsCountry.FindCountryByName(CountryName);
             if (Country1 != null)
             {
-                Console.WriteLine($"{Country1.CountryID},  {Country1.CountryName}");
+                Console.WriteLine($"{Country1.CountryID},  {Country1.CountryName} , {Country1.PhoneCode}");
+
             }
             else
             {
@@ -34,6 +35,8 @@ namespace CountriesPresentationLayer
         {
             clsCountry Country1 = new clsCountry();
             Country1.CountryName = "country 1";
+            Country1.Code = "123";
+            Country1.PhoneCode = "970";
             if (Country1.Save())
             {
                 Console.WriteLine($"Country with the ID [{Country1.CountryID}]  was added succesfully!");
@@ -45,6 +48,8 @@ namespace CountriesPresentationLayer
             if (Country1 != null)
             {
                 Country1.CountryName =  "new country";
+                Country1.Code = "123";
+                Country1.PhoneCode = "970";
                 if (Country1.Save())
                 {
                     Console.WriteLine($"country with the id [{ID}] updated succesfully");
@@ -69,7 +74,7 @@ namespace CountriesPresentationLayer
             Console.WriteLine("Countries Data: ");
             foreach (DataRow row in dataTable.Rows)
             {
-                Console.WriteLine($"{row["CountryID"]},     {row["CountryName"]} ");
+                Console.WriteLine($"{row["CountryID"]},     {row["CountryName"]} , {row["PhoneCode"]}");
             }
         }
 
@@ -98,7 +103,7 @@ namespace CountriesPresentationLayer
         }
         static void Main(string[] args)
         {
-        
+            testListCountries();
         }
     }
 }

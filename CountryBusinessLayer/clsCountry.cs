@@ -14,25 +14,39 @@ namespace CountriesBusinessLayer
         public enMode Mode = enMode.AddNew;
         public int CountryID { set; get; }
         public string CountryName { set; get; }
+
+        public string Code { set; get; }
+
+        public string PhoneCode { set; get; }
+
+
         public clsCountry() {
             this.CountryID = -1;
             this.CountryName = "";
+            this.Code = "";
+            this.PhoneCode = "";
+
             Mode = enMode.AddNew; ;
         }
 
-        private clsCountry(int CountryID, string CountryName)
+        private clsCountry(int CountryID, string CountryName,string Code,string PhoneCode)
         {
             this.CountryID= CountryID;
             this.CountryName=CountryName;
+            this.Code=Code;
+            this.PhoneCode=PhoneCode;
             Mode = enMode.Update;
         }
 
         public static clsCountry FindCountryByID(int CountryID)
         {
             string CountryName = "";
-            if (clsCountryDataAccess.GetCountryInfoByID(CountryID,ref CountryName))
+            string Code = "";
+            string PhoneCode = "";
+
+            if (clsCountryDataAccess.GetCountryInfoByID(CountryID,ref CountryName,ref Code,ref PhoneCode))
             {
-                return new clsCountry(CountryID, CountryName);
+                return new clsCountry(CountryID, CountryName,Code,PhoneCode);
             }
             else
             {
@@ -43,9 +57,12 @@ namespace CountriesBusinessLayer
         public static clsCountry FindCountryByName(string CountryName)
         {
             int CountryID = -1;
-            if (clsCountryDataAccess.GetCountryInfoByName(ref CountryID,  CountryName))
+            string Code = "";
+            string PhoneCode = "";
+
+            if (clsCountryDataAccess.GetCountryInfoByName(ref CountryID,  CountryName,ref Code,ref PhoneCode))
             {
-                return new clsCountry(CountryID, CountryName);
+                return new clsCountry(CountryID, CountryName, Code, PhoneCode);
             }
             else
             {
@@ -54,14 +71,14 @@ namespace CountriesBusinessLayer
         }
         private bool _AddNewCountry()
         {
-            this.CountryID = clsCountryDataAccess.AddNewCountry(this.CountryName);
+            this.CountryID = clsCountryDataAccess.AddNewCountry(this.CountryName,this.Code,this.PhoneCode);
             return this.CountryID != -1;
         }
 
         private bool _UpdateCountry()
         {
 
-            return clsCountryDataAccess.UpdateCountry(this.CountryID,this.CountryName);
+            return clsCountryDataAccess.UpdateCountry(this.CountryID,this.CountryName,this.Code,this.PhoneCode);
         }
 
 
