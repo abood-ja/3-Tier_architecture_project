@@ -103,7 +103,27 @@ namespace CountriesPresentationLayer
         }
         static void Main(string[] args)
         {
-            testListCountries();
+            while (true)
+            {
+                string choice;
+                Console.WriteLine("1: find country by id");
+                Console.WriteLine("2: find country by name");
+                choice = Console.ReadLine();
+                if (choice == "1")
+                {
+                    Console.WriteLine("enter ID: ");
+                    string id;
+                    id = Console.ReadLine();
+                    testFindCountryByID(int.Parse(id));
+                }
+                if (choice == "2")
+                {
+                    Console.WriteLine("enter name: ");
+                    string name;
+                    name = Console.ReadLine();
+                    testFindCountryByName(name);
+                }
+            }
         }
     }
 }

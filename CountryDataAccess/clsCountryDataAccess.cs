@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,11 +7,24 @@ namespace CountryDataAccessLayer
 {
     public class clsCountryDataAccess
     {
+        private static readonly ConnectionMultiplexer _redis = ConnectionMultiplexer.Connect("localhost:6379");
 
+        private static readonly IDatabase _cache = _redis.GetDatabase();
         public static bool GetCountryInfoByID(int CountryID, ref string CountryName, ref string Code,
             ref string PhoneCode)
         {
             bool isFound = false;
+            string key = $"country:{CountryID}";
+            string cachedCountryData=_cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cachedCountryData))
+            {
+                string[] data = cachedCountryData.Split("|");
+                CountryName = data[0];
+                Code = data[1];
+                PhoneCode = data[2];
+                Console.WriteLine("Retrieved from Redis");
+                return true;
+            }
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select * from Countries where CountryID=@CountryID";
             SqlCommand command = new SqlCommand(query, connection);
@@ -24,7 +38,9 @@ namespace CountryDataAccessLayer
                     CountryName = (string)reader["CountryName"];
                     Code = reader["Code"] == DBNull.Value ? "" : (string)reader["Code"];
                     PhoneCode = reader["PhoneCode"]==DBNull.Value?"": (string)reader["PhoneCode"];
-
+                    string contactData = $"{CountryName}|{Code}|{PhoneCode}";
+                    _cache.StringSet(key,contactData,TimeSpan.FromMinutes(5));
+                    Console.WriteLine("Saved to Redis");
                     isFound = true;
                 }
                 reader.Close();
@@ -97,14 +113,38 @@ namespace CountryDataAccessLayer
         {
             int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"
+            string oldName = null;
+            string query = @"select countryName from Countries where CountryID=@CountryID";
+
+
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@CountryID", CountryID);
+            try
+            {
+                connection.Open();
+                object result = command.ExecuteScalar();
+                if (result != null)
+                {
+                    oldName = result.ToString();
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+             query = @"
     UPDATE Countries
     SET
         CountryName = @CountryName,
         Code = @Code,
         PhoneCode = @PhoneCode
     WHERE CountryID = @CountryID";
-            SqlCommand command = new SqlCommand(query, connection);
+            command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@CountryID", CountryID);
             command.Parameters.AddWithValue("@CountryName", CountryName);
             command.Parameters.AddWithValue("@Code", Code);
@@ -123,6 +163,15 @@ namespace CountryDataAccessLayer
             {
                 connection.Close();
             }
+            if (rowsAffected > 0)
+            {
+                _cache.KeyDelete($"country:{CountryID}");
+                if (oldName != null)
+                {
+                    _cache.KeyDelete($"country:{oldName}");
+
+                }
+            }
             return rowsAffected > 0;
         }
 
@@ -130,10 +179,35 @@ namespace CountryDataAccessLayer
         {
             int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"delete from Countries 
-                           where CountryID=@CountryID";
+            string oldName = null;
+            string query = @"select countryName from Countries where CountryID=@CountryID"; 
+
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@CountryID", CountryID);
+            try
+            {
+                connection.Open();
+                object result= command.ExecuteScalar();
+                if (result != null) {
+                oldName= result.ToString();
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally {
+                connection.Close();
+            } 
+
+
+
+             query = @"delete from Countries 
+                           where CountryID=@CountryID";
+            command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@CountryID", CountryID);
+
             try
             {
                 connection.Open();
@@ -146,6 +220,15 @@ namespace CountryDataAccessLayer
             finally
             {
                 connection.Close();
+            }
+            if (rowsAffected > 0)
+            {
+
+                _cache.KeyDelete($"country:{CountryID}");
+                if (oldName != null)
+                {
+                    _cache.KeyDelete($"country:{oldName}");
+                }
             }
             return rowsAffected > 0;
         }
@@ -181,6 +264,11 @@ namespace CountryDataAccessLayer
         public static bool IsCountryExistByID(int CountryID)
         {
             bool isFound = false;
+            string key = $"country:{CountryID}";
+            string cachedCountryData = _cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cachedCountryData)){
+                return true;
+            }
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select isFound=1 from Countries where CountryID=@CountryID";
             SqlCommand command = new SqlCommand(query, connection);
@@ -206,6 +294,12 @@ namespace CountryDataAccessLayer
         public static bool IsCountryExistByName(string CountryName)
         {
             bool isFound = false;
+            string key = $"country:{CountryName}";
+            string cachedCountryData = _cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cachedCountryData))
+            {
+                return true;
+            }
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select isFound=1 from Countries where CountryName=@CountryName";
             SqlCommand command = new SqlCommand(query, connection);
@@ -231,6 +325,17 @@ namespace CountryDataAccessLayer
         public static bool GetCountryInfoByName(ref int CountryID, string CountryName,ref string Code, ref string PhoneCode)
         {
             bool isFound = false;
+            string key = $"country:{CountryName}";
+            string cachedCountryData=_cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cachedCountryData))
+            {
+                string[] data = cachedCountryData.Split("|");
+                CountryID=int.Parse(data[0]);
+                Code = data[1];
+                PhoneCode = data[2];
+                Console.WriteLine("Retrieved from Redis");
+                return true;
+            }
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select * from Countries where CountryName=@CountryName";
             SqlCommand command = new SqlCommand(query, connection);
@@ -245,6 +350,9 @@ namespace CountryDataAccessLayer
                     Code = reader["Code"] == DBNull.Value ? "" : (string)reader["Code"];
                     PhoneCode = reader["PhoneCode"] == DBNull.Value ? "" : (string)reader["PhoneCode"];
 
+                    string countryData = $"{CountryID}|{Code}|{PhoneCode}";
+                    _cache.StringSet(key, countryData,TimeSpan.FromMinutes(5));
+                    Console.WriteLine("Saved to Redis");
                     isFound = true;
                 }
                 reader.Close();
