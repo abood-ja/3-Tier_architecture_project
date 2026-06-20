@@ -92,7 +92,18 @@ namespace ContactsPresentationLayer
         }
         static void Main(string[] args)
         {
-            testIsContactExist(4);
+            while (true)
+            {
+                string choice;
+                choice=Console.ReadLine();
+                if (choice == "1")
+                {
+                    Console.WriteLine("enter ID: ");
+                    string id;
+                    id = Console.ReadLine();
+                    testFindContact(int.Parse(id));
+                }
+            }
         }
     }
 }

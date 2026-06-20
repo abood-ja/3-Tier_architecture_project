@@ -1,17 +1,37 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-
+using StackExchange.Redis;
 namespace ContactsDataAccessLayer
 {
     public class clsContactDataAccess
     {
+
+        private static readonly ConnectionMultiplexer _redis = ConnectionMultiplexer.Connect("localhost:6379");
+
+        private static readonly IDatabase _cache = _redis.GetDatabase();
         public static bool GetContactInfoByID(int ID,ref string FirstName, ref string LastName,
             ref string Email, ref string Phone, ref string Address,
             ref DateTime DateOfBirth, ref int CountryID,ref string ImagePath
             )
         {
             bool isFound = false;
+            string key = $"contact:{ID}";
+            string cashedContactData = _cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cashedContactData))
+            {
+                string[] data = cashedContactData.Split("|");
+                FirstName = data[0];
+                LastName = data[1];
+                Email = data[2];
+                Phone = data[3];
+                Address = data[4];
+                DateOfBirth = DateTime.Parse(data[5], null, System.Globalization.DateTimeStyles.RoundtripKind);
+                CountryID = int.Parse(data[6]);
+                ImagePath = data[7];
+                Console.WriteLine("Retrieved from Redis");
+                return true;
+            }
             SqlConnection connection=new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select * from Contacts where ContactID=@ContactID";
             SqlCommand command=new SqlCommand(query,connection);
@@ -35,6 +55,10 @@ namespace ContactsDataAccessLayer
                         ? DateTime.MinValue
                         : (DateTime)reader["DateOfBirth"];
 
+                    ///save to the cashe 
+                    string contactData =$"{FirstName}|{LastName}|{Email}|{Phone}|{Address}|{DateOfBirth:O}|{CountryID}|{ImagePath}";
+                    _cache.StringSet(key, contactData, TimeSpan.FromMinutes(5));
+                    Console.WriteLine("Saved to Redis");
                 }
                 else
                 {
@@ -149,6 +173,11 @@ namespace ContactsDataAccessLayer
                 {
                     connection.Close();
                 }
+            if (rowsAffected > 0)
+            {
+                _cache.KeyDelete($"contact:{ID}");
+
+            }
             return rowsAffected > 0;
         }
 
@@ -172,6 +201,12 @@ namespace ContactsDataAccessLayer
             finally
             {
                 connection.Close();
+            }
+
+            if (rowsAffected > 0)
+            {
+                _cache.KeyDelete($"contact:{ContactID}");
+
             }
             return rowsAffected > 0;
         }
@@ -206,7 +241,13 @@ namespace ContactsDataAccessLayer
         public static bool IsContactExist(int ContactID)
         {
             bool isFound = false;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string key = $"contact:{ContactID}";
+            string cashedContactData = _cache.StringGet(key);
+            if (!string.IsNullOrEmpty(cashedContactData))
+            {
+                return true;
+            }
+                SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "select isFound=1 from Contacts where ContactID=@ContactID";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@ContactID", ContactID);
